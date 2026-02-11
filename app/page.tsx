@@ -24,9 +24,9 @@ export default function Home() {
     }
   });
 
-  // Hero text parallax
-  const heroY = useTransform(scrollYProgress, [0, 0.15], [0, -100]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 0.5, 0]);
+  // Hero text parallax - stays visible longer, fades gradually
+  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -100]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2, 0.35], [1, 1, 0]);
 
   return (
     <main className="bg-[#0b0b0b] relative">

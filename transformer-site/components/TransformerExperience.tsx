@@ -76,9 +76,9 @@ function PhaseBlock({
   // Position phases at different locations to avoid overlap
   const positionClass =
     phase.id === "hero"
-      ? "items-start justify-end pb-24 pl-8 md:pl-16"
+      ? "items-start justify-end pb-32 pl-10 md:pl-20 lg:pl-24"
       : phase.id === "transformation"
-        ? "items-end justify-start pt-24 pr-8 md:pr-16"
+        ? "items-end justify-start pt-32 pr-10 md:pr-20 lg:pr-24"
         : "items-center justify-center";
 
   return (
@@ -86,7 +86,7 @@ function PhaseBlock({
       className={`absolute inset-0 flex flex-col ${positionClass}`}
       style={{ opacity, y }}
     >
-      <div className="max-w-md space-y-3">
+      <div className="max-w-2xl lg:max-w-3xl space-y-4 md:space-y-5 lg:space-y-6">
         {phase.lines.map((line, i) => (
           <HudLine key={i} text={line.text} style={line.style} index={i} />
         ))}
@@ -112,13 +112,13 @@ function HudLine({
 
   const classes: Record<string, string> = {
     title:
-      "font-heading text-2xl md:text-4xl lg:text-5xl font-bold tracking-[0.15em] uppercase text-white",
+      "font-heading text-3xl md:text-5xl lg:text-7xl font-bold tracking-[0.15em] uppercase text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]",
     caption:
-      "font-body text-sm md:text-base tracking-[0.12em] uppercase text-white/50",
+      "font-body text-base md:text-lg lg:text-xl tracking-[0.12em] uppercase text-white/70 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]",
     system:
-      "font-mono text-[10px] md:text-xs tracking-[0.2em] uppercase text-[#B71C1C]/80",
+      "font-mono text-xs md:text-sm lg:text-base tracking-[0.2em] uppercase text-[#B71C1C] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]",
     signature:
-      "font-heading text-lg md:text-xl tracking-[0.2em] uppercase text-white/70",
+      "font-heading text-xl md:text-2xl lg:text-3xl tracking-[0.2em] uppercase text-white/80 drop-shadow-[0_3px_15px_rgba(0,0,0,0.9)]",
   };
 
   return (
@@ -155,11 +155,11 @@ function FrameCounter({
 
   return (
     <motion.div
-      className="absolute bottom-6 right-6 md:bottom-10 md:right-10 font-mono text-[10px] md:text-xs tracking-[0.25em] text-white/30"
-      style={{ opacity: useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 0.6, 0.6, 0]) }}
+      className="absolute bottom-8 right-8 md:bottom-12 md:right-12 font-mono text-sm md:text-base lg:text-lg tracking-[0.25em] text-white/50 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
+      style={{ opacity: useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 0.8, 0.8, 0]) }}
     >
-      <motion.span>{displayFrame}</motion.span>
-      <span className="text-white/15"> / {SEQUENCE_CONFIG.totalFrames}</span>
+      <motion.span className="text-white/70 font-bold">{displayFrame}</motion.span>
+      <span className="text-white/30"> / {SEQUENCE_CONFIG.totalFrames}</span>
     </motion.div>
   );
 }

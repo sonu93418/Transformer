@@ -15,9 +15,9 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  title: "Cinematic Transformer Sequence",
+  title: "Optimus Prime — Transformation Sequence",
   description:
-    "A scroll-driven cinematic transformation from truck to robot — frame by frame.",
+    "Scroll-driven cinematic transformation of Optimus Prime from truck to robot — frame by frame. Autobots, roll out!",
 };
 
 export default function RootLayout({

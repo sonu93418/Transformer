@@ -1,8 +1,8 @@
 export const SEQUENCE_CONFIG = {
-  totalFrames: 204,
+  totalFrames: 192, // Actual frame count from extracted WebP
   folder: "/images/transformer-sequence/",
   scrollLength: "500vh",
-  fileExtension: "jpg",
+  fileExtension: "png",
 } as const;
 
 export interface HudPhase {
@@ -17,18 +17,18 @@ export const HUD_PHASES: HudPhase[] = [
     id: "hero",
     range: [0, 0.3],
     lines: [
-      { text: "TRANSFORMATION SEQUENCE", style: "title" },
-      { text: "Frame-by-frame cinematic direction", style: "caption" },
-      { text: "SYS: STANDBY — AWAITING INPUT", style: "system" },
+      { text: "OPTIMUS PRIME", style: "title" },
+      { text: "Autobots roll out", style: "caption" },
+      { text: "SYSTEMS: ONLINE — STANDBY MODE", style: "system" },
     ],
   },
   {
     id: "transformation",
     range: [0.3, 0.75],
     lines: [
-      { text: "SYSTEM: SHIFTING — CORE ENGAGED", style: "system" },
-      { text: "RECONFIGURING STRUCTURE", style: "caption" },
-      { text: "PANELS UNLOCKED • AXES ROTATING", style: "system" },
+      { text: "TRANSFORMATION INITIATED", style: "system" },
+      { text: "MECHANICAL RECONFIGURATION IN PROGRESS", style: "caption" },
+      { text: "ENERGON CORE: ACTIVE • ALLSPARK ENGAGED", style: "system" },
     ],
   },
   {
@@ -36,50 +36,50 @@ export const HUD_PHASES: HudPhase[] = [
     range: [0.75, 1],
     lines: [
       { text: "TRANSFORMATION COMPLETE", style: "title" },
-      { text: "Cinematic Transformer Sequence", style: "signature" },
-      { text: "SCROLL EXPERIENCE BY [YOUR NAME]", style: "caption" },
+      { text: "Freedom is the right of all sentient beings", style: "signature" },
+      { text: "OPTIMUS PRIME — AUTOBOT LEADER", style: "caption" },
     ],
   },
 ];
 
 export const SPECS = [
-  { label: "Frames", value: "204" },
-  { label: "Duration", value: "~8 sec" },
+  { label: "Frames", value: "192" },
+  { label: "Faction", value: "AUTOBOT" },
   { label: "Resolution", value: "16 : 9" },
-  { label: "FPS", value: "24–30" },
-  { label: "Format", value: "JPG / WebP" },
-  { label: "Engine", value: "Canvas 2D" },
+  { label: "Alt Mode", value: "TRUCK" },
+  { label: "Robot", value: "PRIME" },
+  { label: "Engine", value: "Canvas" },
 ];
 
 export const FEATURES = [
   {
-    title: "Scroll-Driven Animation",
+    title: "Scroll-Driven Transformation",
     description:
-      "Every pixel of scroll maps directly to a frame, giving the user full control over the transformation timeline.",
+      "Control Optimus Prime's transformation timeline with scroll. Every pixel maps to a frame, giving you complete control over the conversion from vehicle to robot mode.",
   },
   {
-    title: "Mechanical Fidelity",
+    title: "Mechanical Precision",
     description:
-      "Panels split, rotate, slide, and fold with visible hinges, pistons, and interlocking metal components.",
+      "Watch as panels split, rotate, slide, and fold with visible hinges and interlocking components — true to the authentic Transformer design philosophy.",
   },
   {
-    title: "Cinematic Environment",
+    title: "Battle-Ready Environment",
     description:
-      "The background evolves from a dark industrial garage to a vast outdoor battlefield in perfect sync with the morph.",
+      "The background transitions from a peaceful garage to an intense battlefield, synced perfectly with the transformation sequence.",
   },
   {
     title: "High-DPI Rendering",
     description:
-      "Canvas is scaled by devicePixelRatio so every frame stays razor-sharp on Retina and 4K displays.",
+      "Every detail of Optimus Prime is rendered crystal-clear on Retina and 4K displays using devicePixelRatio canvas scaling.",
   },
   {
     title: "Performance Optimized",
     description:
-      "Frames are preloaded progressively. Lightweight HUD overlays won't block paint or scroll.",
+      "Progressive frame preloading ensures smooth 60fps scrubbing. Lightweight HUD overlays that never block the transformation action.",
   },
   {
-    title: "Accessibility First",
+    title: "Autobot Accessibility",
     description:
-      "Screen-reader summaries, reduced-motion fallback, and keyboard-navigable CTAs are included out of the box.",
+      "Screen-reader summaries, reduced-motion fallback, and keyboard navigation — making the experience accessible to all.",
   },
 ];

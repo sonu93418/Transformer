@@ -22,6 +22,8 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -31,6 +33,16 @@ body {
   color: #ededed;
   font-family: var(--font-body);
   overflow-x: hidden;
+}
+
+/* High quality image rendering */
+img, canvas {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+canvas {
+  image-rendering: high-quality;
 }
 
 /* Scrollbar styling */
@@ -45,6 +57,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--neutral-carbon);
   border-radius: 3px;
+  transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -54,8 +67,27 @@ body {
 /* Utility for heading font */
 .font-heading {
   font-family: var(--font-heading);
+  font-feature-settings: "ss01" 1, "ss02" 1;
+  letter-spacing: 0.05em;
 }
 
 .font-body {
   font-family: var(--font-body);
+  font-feature-settings: "kern" 1;
+}
+
+/* Smooth text rendering */
+h1, h2, h3, h4, h5, h6 {
+  text-rendering: optimizeLegibility;
+}
+
+/* Selection styling */
+::selection {
+  background: var(--accent-metal);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--accent-metal);
+  color: white;
 }

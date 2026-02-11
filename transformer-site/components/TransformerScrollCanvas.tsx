@@ -39,7 +39,7 @@ export default function TransformerScrollCanvas({
   const drawFrame = useCallback((idx: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
     const img = imagesRef.current[idx];
@@ -56,38 +56,48 @@ export default function TransformerScrollCanvas({
       ctx.scale(dpr, dpr);
     }
 
-    ctx.clearRect(0, 0, displayW, displayH);
+    // Enable high-quality image rendering
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
 
-    // "cover" logic — fill canvas, crop overflow
+    // Fill background with dark color
+    ctx.fillStyle = "#0b0b0b";
+    ctx.fillRect(0, 0, displayW, displayH);
+
+    // "contain" logic — fit entire image inside canvas, preserve aspect ratio
     const imgRatio = img.naturalWidth / img.naturalHeight;
     const canvasRatio = displayW / displayH;
 
     let drawW: number, drawH: number, drawX: number, drawY: number;
+    
     if (imgRatio > canvasRatio) {
-      // Image is wider — fit height, center horizontally
-      drawH = displayH;
-      drawW = displayH * imgRatio;
-      drawX = (displayW - drawW) / 2;
-      drawY = 0;
-    } else {
-      // Image is taller — fit width, center vertically
+      // Image is wider — fit to width, add letterboxing top/bottom
       drawW = displayW;
       drawH = displayW / imgRatio;
       drawX = 0;
       drawY = (displayH - drawH) / 2;
+    } else {
+      // Image is taller — fit to height, add pillarboxing left/right
+      drawH = displayH;
+      drawW = displayH * imgRatio;
+      drawX = (displayW - drawW) / 2;
+      drawY = 0;
     }
 
     ctx.drawImage(img, drawX, drawY, drawW, drawH);
   }, []);
 
   /**
-   * Preload all frame images progressively.
+   * Preload all frame images progressively with high quality.
    */
   useEffect(() => {
     const images: HTMLImageElement[] = [];
 
     for (let i = 0; i < totalFrames; i++) {
       const img = new Image();
+      // Enable CORS for better quality handling
+      img.crossOrigin = "anonymous";
+      img.decoding = "async";
       img.src = `${imageFolderPath}${i + 1}.${fileExtension}`;
       img.onload = () => {
         loadedCountRef.current++;

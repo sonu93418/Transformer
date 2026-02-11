@@ -17,10 +17,12 @@ export default function TransformerExperience({
   return (
     <div className="absolute inset-0 z-10 pointer-events-none select-none overflow-hidden">
       {/* Screen-reader accessible summary (visually hidden) */}
-      <div className="sr-only" role="region" aria-label="Transformation sequence description">
+      <div className="sr-only" role="region" aria-label="Optimus Prime transformation sequence">
         <p>
-          A cinematic frame-by-frame transformation from a heavy-duty truck into
-          a heroic humanoid robot. Scroll to control the animation.
+          A cinematic frame-by-frame transformation of Optimus Prime from a
+          heavy-duty truck into a heroic Autobot robot. Scroll to control the
+          transformation timeline and witness the mechanical precision of this
+          legendary leader.
         </p>
       </div>
 

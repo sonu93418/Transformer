@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebP Frame Extractor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0b0b0b;
+            color: #fff;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #B71C1C;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            border: 3px dashed #B71C1C;
+            border-radius: 10px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 30px;
+        }
+        .upload-area:hover {
+            background: #1a1a1a;
+            border-color: #ff4444;
+        }
+        .upload-area.dragover {
+            background: #1a1a1a;
+            border-color: #ff4444;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .btn {
+            background: #B71C1C;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #ff4444;
+        }
+        .btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+        #preview {
+            margin-top: 30px;
+        }
+        .frame-preview {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        .frame-preview canvas {
+            border: 1px solid #333;
+            border-radius: 5px;
+            max-width: 150px;
+            display: block;
+        }
+        .frame-number {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        #status {
+            background: #1a1a1a;
+            border-left: 4px solid #B71C1C;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success { border-left-color: #4CAF50; }
+        .warning { border-left-color: #FFC107; }
+        .progress {
+            width: 100%;
+            height: 30px;
+            background: #1a1a1a;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #B71C1C, #ff4444);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        .instructions {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        .instructions h3 {
+            color: #B71C1C;
+            margin-bottom: 15px;
+        }
+        .instructions ol {
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 WebP Frame Extractor</h1>
+        <p class="subtitle">Extract individual frames from your animated WebP for the Transformer project</p>
+        
+        <div class="upload-area" id="uploadArea">
+            <h2>📁 Drop your WebP file here</h2>
+            <p style="color: #888; margin-top: 10px;">or click to browse</p>
+            <input type="file" id="fileInput" accept=".webp">
+        </div>
+
+        <div id="status" style="display: none;"></div>
+        
+        <div class="progress" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+
+        <button class="btn" id="extractBtn" disabled>Extract All Frames</button>
+        <button class="btn" id="downloadBtn" style="display: none;">Download All Frames (ZIP)</button>
+
+        <div id="preview"></div>
+
+        <div class="instructions">
+            <h3>📋 Instructions</h3>
+            <ol>
+                <li>Select or drag your animated WebP file above</li>
+                <li>Click "Extract All Frames" to process</li>
+                <li>Download the ZIP file containing all frames</li>
+                <li>Extract the ZIP and copy all frames to:<br>
+                    <code style="background: #0b0b0b; padding: 5px 10px; border-radius: 3px; display: inline-block; margin-top: 5px;">
+                        transformer-site/public/images/transformer-sequence/
+                    </code>
+                </li>
+                <li>Update <code style="background: #0b0b0b; padding: 2px 6px; border-radius: 3px;">data/transformerData.ts</code> with the total frame count</li>
+                <li>Run <code style="background: #0b0b0b; padding: 2px 6px; border-radius: 3px;">npm run dev</code> to see your animation!</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const extractBtn = document.getElementById('extractBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const status = document.getElementById('status');
+        const preview = document.getElementById('preview');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        
+        let extractedFrames = [];
+        let webpFile = null;
+
+        // Drag and drop
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.webp')) {
+                showStatus('Please select a WebP file', 'warning');
+                return;
+            }
+            
+            webpFile = file;
+            extractBtn.disabled = false;
+            showStatus(`✅ File loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 'success');
+        }
+
+        extractBtn.addEventListener('click', async () => {
+            if (!webpFile) return;
+            
+            extractBtn.disabled = true;
+            preview.innerHTML = '';
+            extractedFrames = [];
+            progressContainer.style.display = 'block';
+            
+            showStatus('🎬 Extracting frames... Please wait', '');
+            
+            try {
+                // Create an image element
+                const img = new Image();
+                const url = URL.createObjectURL(webpFile);
+                
+                img.onload = async function() {
+                    // For animated WebP, we need to decode multiple frames
+                    // This is a simplified approach - in reality, animated WebP needs special handling
+                    showStatus('⚠️ Note: Animated WebP extraction in browser has limitations. Best to use EZGIF online tool.', 'warning');
+                    
+                    // Extract what we can (usually just the first frame)
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    canvas.toBlob((blob) => {
+                        extractedFrames.push(blob);
+                        updateProgress(100);
+                        showStatus(`✅ Extracted 1 frame. For full animation, use EZGIF: https://ezgif.com/split-webp`, 'success');
+                        downloadBtn.style.display = 'inline-block';
+                    }, 'image/jpeg', 0.92);
+                    
+                    URL.revokeObjectURL(url);
+                };
+                
+                img.src = url;
+                
+            } catch (error) {
+                showStatus('❌ Error: ' + error.message, 'warning');
+                extractBtn.disabled = false;
+            }
+        });
+
+        downloadBtn.addEventListener('click', async () => {
+            const zip = new JSZip();
+            
+            extractedFrames.forEach((blob, i) => {
+                zip.file(`${i + 1}.jpg`, blob);
+            });
+            
+            const content = await zip.generateAsync({ type: 'blob' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(content);
+            link.download = 'transformer-frames.zip';
+            link.click();
+            
+            showStatus('✅ Downloaded frames ZIP!', 'success');
+        });
+
+        function showStatus(message, type) {
+            status.style.display = 'block';
+            status.innerHTML = message;
+            status.className = type;
+        }
+
+        function updateProgress(percent) {
+            progressBar.style.width = percent + '%';
+            progressBar.textContent = Math.round(percent) + '%';
+        }
+    </script>
+</body>
+</html>

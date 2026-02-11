@@ -5,6 +5,7 @@ import { HUD_PHASES, SEQUENCE_CONFIG } from "@/data/transformerData";
 
 interface TransformerExperienceProps {
   scrollYProgress: MotionValue<number>;
+  hasScrolled: boolean;
 }
 
 /**
@@ -13,6 +14,7 @@ interface TransformerExperienceProps {
  */
 export default function TransformerExperience({
   scrollYProgress,
+  hasScrolled,
 }: TransformerExperienceProps) {
   return (
     <div className="absolute inset-0 z-10 pointer-events-none select-none overflow-hidden">
@@ -31,11 +33,12 @@ export default function TransformerExperience({
           key={phase.id}
           phase={phase}
           scrollYProgress={scrollYProgress}
+          hasScrolled={hasScrolled}
         />
       ))}
 
       {/* Live frame counter */}
-      <FrameCounter scrollYProgress={scrollYProgress} />
+      <FrameCounter scrollYProgress={scrollYProgress} hasScrolled={hasScrolled} />
     </div>
   );
 }
@@ -47,9 +50,11 @@ export default function TransformerExperience({
 function PhaseBlock({
   phase,
   scrollYProgress,
+  hasScrolled,
 }: {
   phase: (typeof HUD_PHASES)[number];
   scrollYProgress: MotionValue<number>;
+  hasScrolled: boolean;
 }) {
   const [start, end] = phase.range;
   const mid = (start + end) / 2;
@@ -88,7 +93,7 @@ function PhaseBlock({
     >
       <div className="max-w-2xl lg:max-w-3xl space-y-4 md:space-y-5 lg:space-y-6">
         {phase.lines.map((line, i) => (
-          <HudLine key={i} text={line.text} style={line.style} index={i} />
+          <HudLine key={i} text={line.text} style={line.style} index={i} hasScrolled={hasScrolled} />
         ))}
       </div>
     </motion.div>
@@ -103,10 +108,12 @@ function HudLine({
   text,
   style = "caption",
   index,
+  hasScrolled,
 }: {
   text: string;
   style?: "title" | "caption" | "system" | "signature";
   index: number;
+  hasScrolled: boolean;
 }) {
   const baseDelay = index * 0.08;
 
@@ -125,7 +132,7 @@ function HudLine({
     <motion.p
       className={classes[style] ?? classes.caption}
       initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
+      animate={hasScrolled ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
       transition={{
         delay: baseDelay,
         duration: 0.6,
@@ -143,8 +150,10 @@ function HudLine({
 
 function FrameCounter({
   scrollYProgress,
+  hasScrolled,
 }: {
   scrollYProgress: MotionValue<number>;
+  hasScrolled: boolean;
 }) {
   const frameNumber = useTransform(scrollYProgress, [0, 1], [1, SEQUENCE_CONFIG.totalFrames]);
 
@@ -153,10 +162,17 @@ function FrameCounter({
     String(Math.round(v)).padStart(3, "0")
   );
 
+  // Only show frame counter when scrolling has started
+  const opacity = useTransform(
+    scrollYProgress, 
+    [0, 0.05, 0.95, 1], 
+    hasScrolled ? [0, 0.8, 0.8, 0] : [0, 0, 0, 0]
+  );
+
   return (
     <motion.div
       className="absolute bottom-8 right-8 md:bottom-12 md:right-12 font-mono text-sm md:text-base lg:text-lg tracking-[0.25em] text-white/50 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
-      style={{ opacity: useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 0.8, 0.8, 0]) }}
+      style={{ opacity }}
     >
       <motion.span className="text-white/70 font-bold">{displayFrame}</motion.span>
       <span className="text-white/30"> / {SEQUENCE_CONFIG.totalFrames}</span>

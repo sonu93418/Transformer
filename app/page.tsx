@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { useScroll, motion, useTransform } from "framer-motion";
+import { useRef, useState } from "react";
+import { useScroll, motion, useTransform, useMotionValueEvent } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import TransformerScrollCanvas from "@/components/TransformerScrollCanvas";
 import TransformerExperience from "@/components/TransformerExperience";
@@ -10,10 +10,18 @@ import { SEQUENCE_CONFIG } from "@/data/transformerData";
 
 export default function Home() {
   const containerRef = useRef<HTMLElement>(null);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
+  });
+
+  // Track when user starts scrolling
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    if (latest > 0 && !hasScrolled) {
+      setHasScrolled(true);
+    }
   });
 
   // Hero text parallax
@@ -51,7 +59,7 @@ export default function Home() {
           >
             <div className="text-center max-w-4xl mx-auto">
               <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-wider text-white uppercase drop-shadow-2xl leading-tight">
-                <span className="inline-block bg-gradient-to-r from-white via-white to-[#B71C1C] bg-clip-text text-transparent animate-gradient">
+                <span className={`inline-block bg-gradient-to-r from-white via-white to-[#B71C1C] bg-clip-text text-transparent ${hasScrolled ? 'animate-gradient' : ''}`}>
                   Optimus Prime
                 </span>
               </h1>
@@ -61,10 +69,10 @@ export default function Home() {
                 </p>
                 <motion.div
                   className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-16 sm:w-24 md:w-32 h-px bg-gradient-to-r from-transparent via-[#B71C1C] to-transparent"
-                  animate={{ 
+                  animate={hasScrolled ? { 
                     scaleX: [1, 1.5, 1], 
                     opacity: [0.5, 1, 0.5] 
-                  }}
+                  } : {}}
                   transition={{ 
                     duration: 2, 
                     repeat: Infinity, 
@@ -75,7 +83,7 @@ export default function Home() {
                 {/* Scroll hint icon for mobile */}
                 <motion.div
                   className="md:hidden mt-8 flex flex-col items-center gap-2"
-                  animate={{ y: [0, 10, 0] }}
+                  animate={hasScrolled ? { y: [0, 10, 0] } : {}}
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                 >
                   <svg
@@ -95,7 +103,10 @@ export default function Home() {
           </motion.div>
 
           {/* HUD overlay — z-10 */}
-          <TransformerExperience scrollYProgress={scrollYProgress} />
+          <TransformerExperience 
+            scrollYProgress={scrollYProgress} 
+            hasScrolled={hasScrolled}
+          />
         </div>
       </section>
 

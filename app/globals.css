@@ -138,7 +138,7 @@ h1, h2, h3, h4, h5, h6 {
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
-
+  
 /* Mobile optimizations */
 @media (max-width: 768px) {
   body {

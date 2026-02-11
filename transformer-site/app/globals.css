@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --base-dark: #0b0b0b;
+  --accent-metal: #b71c1c;
+  --neutral-carbon: #2a2a2a;
+  --font-heading: var(--font-orbitron), "Orbitron", sans-serif;
+  --font-body: var(--font-rajdhani), "Rajdhani", sans-serif;
+}
+
+@theme inline {
+  --color-base-dark: var(--base-dark);
+  --color-accent-metal: var(--accent-metal);
+  --color-neutral-carbon: var(--neutral-carbon);
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--base-dark);
+  color: #ededed;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--base-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-carbon);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-metal);
+}
+
+/* Utility for heading font */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}

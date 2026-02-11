@@ -2,6 +2,7 @@
   "name": "transformer-site",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://transformer.sonuray.me",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

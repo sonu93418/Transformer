@@ -11,7 +11,7 @@
 
 **A cinematic, scroll-driven transformation sequence of Optimus Prime from vehicle to robot mode**
 
-[🚀 View Demo](#) • [📖 Documentation](#installation) • [🐛 Report Bug](https://github.com/sonu93418/Transformer/issues) • [✨ Request Feature](https://github.com/sonu93418/Transformer/issues)
+[🚀 View Live Demo](https://transformer.sonuray.me) • [📖 Documentation](#installation) • [🐛 Report Bug](https://github.com/sonu93418/Transformer/issues) • [✨ Request Feature](https://github.com/sonu93418/Transformer/issues)
 
 ---
 
@@ -91,6 +91,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the transformation in action! 🎉
+
+**Live Demo**: [https://transformer.sonuray.me](https://transformer.sonuray.me)
 
 ### Build for Production
 

@@ -24,6 +24,11 @@ html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Hardware acceleration for smooth scrolling */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 body {
@@ -33,16 +38,24 @@ body {
   color: #ededed;
   font-family: var(--font-body);
   overflow-x: hidden;
+  overscroll-behavior: none;
+  /* Smooth scrolling performance */
+  will-change: scroll-position;
 }
 
-/* High quality image rendering */
+/* High quality image rendering with performance optimization */
 img, canvas {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
+  /* Hardware acceleration */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 canvas {
   image-rendering: high-quality;
+  /* Prevent canvas jank */
+  contain: strict;
 }
 
 /* Scrollbar styling */
@@ -79,6 +92,83 @@ canvas {
 /* Smooth text rendering */
 h1, h2, h3, h4, h5, h6 {
   text-rendering: optimizeLegibility;
+  font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Performance optimizations for animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    scroll-behavior: smooth;
+  }
+}
+
+/* GPU acceleration for transform heavy elements */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  body {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y;
+  }
+  
+  /* Reduce motion on mobile for better performance */
+  * {
+    animation-duration: 0.5s !important;
+    transition-duration: 0.3s !important;
+  }
+}
+
+/* High refresh rate support */
+@media (min-resolution: 120dpi) {
+  html {
+    scroll-snap-type: none;
+  }
+}
+
+/* Loading state blur effect */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(183, 28, 28, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(183, 28, 28, 0.6);
+  }
+}
 }
 
 /* Selection styling */

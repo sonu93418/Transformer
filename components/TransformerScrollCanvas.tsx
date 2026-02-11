@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import {
   useTransform,
   useMotionValueEvent,
   type MotionValue,
 } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface TransformerScrollCanvasProps {
   scrollYProgress: MotionValue<number>;
@@ -25,6 +26,8 @@ export default function TransformerScrollCanvas({
   const loadedCountRef = useRef(0);
   const currentFrameRef = useRef(0);
   const rafRef = useRef<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadProgress, setLoadProgress] = useState(0);
 
   const frameIndex = useTransform(
     scrollYProgress,
@@ -92,6 +95,7 @@ export default function TransformerScrollCanvas({
    */
   useEffect(() => {
     const images: HTMLImageElement[] = [];
+    let loaded = 0;
 
     for (let i = 0; i < totalFrames; i++) {
       const img = new Image();
@@ -100,10 +104,19 @@ export default function TransformerScrollCanvas({
       img.decoding = "async";
       img.src = `${imageFolderPath}${i + 1}.${fileExtension}`;
       img.onload = () => {
-        loadedCountRef.current++;
+        loaded++;
+        loadedCountRef.current = loaded;
+        const progress = (loaded / totalFrames) * 100;
+        setLoadProgress(progress);
+        
         // Draw the first frame once it's ready
         if (i === 0 && canvasRef.current) {
           drawFrame(0);
+        }
+        
+        // Hide loading once all images are loaded
+        if (loaded === totalFrames) {
+          setTimeout(() => setIsLoading(false), 300);
         }
       };
       images.push(img);
@@ -144,11 +157,83 @@ export default function TransformerScrollCanvas({
   }, [drawFrame]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      className="absolute inset-0 w-full h-full"
-      style={{ display: "block" }}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full"
+        style={{ display: "block", willChange: "transform" }}
+      />
+      
+      {/* Loading Screen */}
+      {isLoading && (
+        <motion.div
+          className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#0b0b0b]"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: isLoading ? 1 : 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Autobot Logo Animation */}
+          <div className="relative mb-8">
+            <motion.div
+              className="w-20 h-20 md:w-24 md:h-24 border-4 border-[#B71C1C] rounded-sm relative"
+              animate={{
+                rotate: [0, 90, 180, 270, 360],
+                scale: [1, 1.1, 1, 1.1, 1],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            >
+              <div className="absolute inset-2 border-2 border-[#B71C1C]/50 rounded-sm" />
+              <motion.div
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-[#B71C1C]"
+                animate={{
+                  opacity: [0.3, 1, 0.3],
+                  scale: [0.8, 1.2, 0.8],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+              />
+            </motion.div>
+          </div>
+
+          {/* Loading Text */}
+          <motion.div
+            className="font-heading text-sm md:text-base tracking-[0.3em] uppercase text-white/80 mb-4"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            Initializing Transformation
+          </motion.div>
+
+          {/* Progress Bar */}
+          <div className="w-64 md:w-80 h-1 bg-white/10 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-[#B71C1C] via-white to-[#B71C1C] bg-size-200 animate-shimmer"
+              style={{ width: `${loadProgress}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
+
+          {/* Progress Percentage */}
+          <motion.div
+            className="font-mono text-xs md:text-sm text-white/40 mt-4 tracking-wider"
+            key={Math.floor(loadProgress)}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {Math.floor(loadProgress)}% • {loadedCountRef.current}/{totalFrames} frames
+          </motion.div>
+        </motion.div>
+      )}
+    </>
   );
 }
